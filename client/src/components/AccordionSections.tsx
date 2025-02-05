@@ -12,20 +12,17 @@ const AccordionSections = ({ sections }: AccordionSectionsProps) => {
     <Accordion type="multiple" className="w-full">
       {sections.map((section) => (
         <AccordionItem
-          key={section.sectionId}
-          value={section.sectionTitle}
+          key={section.id}
+          value={section.title}
           className="accordion-section"
         >
           <AccordionTrigger className="accordion-section__trigger">
-            <h5 className="accordion-section__title">{section.sectionTitle}</h5>
+            <h5 className="accordion-section__title">{section.title}</h5>
           </AccordionTrigger>
           <AccordionContent className="accordion-section__content">
             <ul>
               {section.chapters.map((chapter) => (
-                <li
-                  key={chapter.chapterId}
-                  className="accordion-section__chapter"
-                >
+                <li key={chapter.id} className="accordion-section__chapter">
                   <FileText className="mr-2 w-4 h-4" />
                   <span className="text-sm">{chapter.title}</span>
                 </li>

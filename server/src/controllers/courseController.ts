@@ -1,21 +1,44 @@
 import { Request, Response } from "express";
-import Course from "../models/courseModel";
-import AWS from "aws-sdk";
-import { v4 as uuidv4 } from "uuid";
+// import AWS from "aws-sdk";
 import { getAuth } from "@clerk/express";
+import prisma from "../../lib/prisma";
+import { Level, Status } from "@prisma/client";
 
-const s3 = new AWS.S3();
+// const s3 = new AWS.S3();
 
 export const listCourses = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { category } = req.query;
+  const category = req.query.category as string;
+  const userId = req.query.user as string;
   try {
-    const courses =
-      category && category !== "all"
-        ? await Course.scan("category").eq(category).exec()
-        : await Course.scan().exec();
+    let whereObj: any = {};
+
+    if (userId) {
+      whereObj.enrollments = {
+        some: {
+          userId, // Filter courses where the user is enrolled
+        },
+      };
+    }
+
+    if (category && category !== "all") {
+      whereObj.category = category;
+    }
+
+    const courses = await prisma.course.findMany({
+      where: whereObj, // Filter by category if it's specified and not "all"
+      include: {
+        sections: {
+          include: {
+            chapters: { orderBy: { order: "asc" } },
+          },
+        },
+        enrollments: true,
+      },
+    });
+
     res.json({ message: "Courses retrieved successfully", data: courses });
   } catch (error) {
     res.status(500).json({ message: "Error retrieving courses", error });
@@ -25,7 +48,13 @@ export const listCourses = async (
 export const getCourse = async (req: Request, res: Response): Promise<void> => {
   const { courseId } = req.params;
   try {
-    const course = await Course.get(courseId);
+    const course = await prisma.course.findUnique({
+      where: { id: courseId },
+      include: {
+        sections: { include: { chapters: { orderBy: { order: "asc" } } } },
+        enrollments: true,
+      },
+    });
     if (!course) {
       res.status(404).json({ message: "Course not found" });
       return;
@@ -48,21 +77,19 @@ export const createCourse = async (
       return;
     }
 
-    const newCourse = new Course({
-      courseId: uuidv4(),
-      teacherId,
-      teacherName,
-      title: "Untitled Course",
-      description: "",
-      category: "Uncategorized",
-      image: "",
-      price: 0,
-      level: "Beginner",
-      status: "Draft",
-      sections: [],
-      enrollments: [],
+    const newCourse = await prisma.course.create({
+      data: {
+        teacherId,
+        teacherName,
+        title: "Untitled Course",
+        description: "",
+        category: "Uncategorized",
+        image: "",
+        price: 0,
+        level: Level.BEGINNER,
+        status: Status.DRAFT,
+      },
     });
-    await newCourse.save();
 
     res.json({ message: "Course created successfully", data: newCourse });
   } catch (error) {
@@ -77,9 +104,15 @@ export const updateCourse = async (
   const { courseId } = req.params;
   const updateData = { ...req.body };
   const { userId } = getAuth(req);
+  let sectionsData: any = [];
 
   try {
-    const course = await Course.get(courseId);
+    const course = await prisma.course.findUnique({
+      where: { id: courseId },
+      include: {
+        sections: { include: { chapters: true } },
+      },
+    });
     if (!course) {
       res.status(404).json({ message: "Course not found" });
       return;
@@ -103,23 +136,53 @@ export const updateCourse = async (
     }
 
     if (updateData.sections) {
-      const sectionsData =
+      sectionsData =
         typeof updateData.sections === "string"
           ? JSON.parse(updateData.sections)
           : updateData.sections;
-
-      updateData.sections = sectionsData.map((section: any) => ({
-        ...section,
-        sectionId: section.sectionId || uuidv4(),
-        chapters: section.chapters.map((chapter: any) => ({
-          ...chapter,
-          chapterId: chapter.chapterId || uuidv4(),
-        })),
-      }));
     }
 
-    Object.assign(course, updateData);
-    await course.save();
+    await prisma.$transaction(async (tx) => {
+      await tx.section.deleteMany({ where: { courseId } });
+
+      await tx.course.update({
+        where: {
+          id: courseId,
+        },
+        data: {
+          title: updateData.title,
+          description: updateData.description,
+          category: updateData.category,
+          price: updateData.price,
+          status: updateData.status,
+        },
+      });
+
+      for (const section of sectionsData) {
+        await tx.section.create({
+          data: {
+            id: section.id,
+            title: section.title,
+            description: section.description,
+            courseId,
+          },
+        });
+
+        for (const [index, chapter] of section.chapters.entries()) {
+          await tx.chapter.create({
+            data: {
+              id: chapter.id,
+              title: chapter.title,
+              content: chapter.content,
+              sectionId: section.id,
+              type: chapter.type,
+              video: chapter.video,
+              order: index + 1,
+            },
+          });
+        }
+      }
+    });
 
     res.json({ message: "Course updated successfully", data: course });
   } catch (error) {
@@ -135,7 +198,7 @@ export const deleteCourse = async (
   const { userId } = getAuth(req);
 
   try {
-    const course = await Course.get(courseId);
+    const course = await prisma.course.findUnique({ where: { id: courseId } });
     if (!course) {
       res.status(404).json({ message: "Course not found" });
       return;
@@ -146,7 +209,7 @@ export const deleteCourse = async (
       return;
     }
 
-    await Course.delete(courseId);
+    await prisma.course.delete({ where: { id: courseId } });
 
     res.status(204).json({ message: "Course deleted successfully" });
   } catch (error) {
@@ -158,32 +221,27 @@ export const getUploadVideoUrl = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { fileName, fileType } = req.body;
-
-  if (!fileName || !fileType) {
-    res.status(400).json({ message: "File name and type are required" });
-    return;
-  }
-
-  try {
-    const uniqueId = uuidv4();
-    const s3Key = `videos/${uniqueId}/${fileName}`;
-
-    const s3Params = {
-      Bucket: process.env.S3_BUCKET_NAME || "",
-      Key: s3Key,
-      Expires: 60,
-      ContentType: fileType,
-    };
-
-    const uploadUrl = s3.getSignedUrl("putObject", s3Params);
-    const videoUrl = `${process.env.CLOUDFRONT_DOMAIN}/videos/${uniqueId}/${fileName}`;
-
-    res.json({
-      message: "Upload URL generated successfully",
-      data: { uploadUrl, videoUrl },
-    });
-  } catch (error) {
-    res.status(500).json({ message: "Error generating upload URL", error });
-  }
+  // const { fileName, fileType } = req.body;
+  // if (!fileName || !fileType) {
+  //   res.status(400).json({ message: "File name and type are required" });
+  //   return;
+  // }
+  // try {
+  //   const uniqueId = uuidv4();
+  //   const s3Key = `videos/${uniqueId}/${fileName}`;
+  //   const s3Params = {
+  //     Bucket: process.env.S3_BUCKET_NAME || "",
+  //     Key: s3Key,
+  //     Expires: 60,
+  //     ContentType: fileType,
+  //   };
+  //   const uploadUrl = s3.getSignedUrl("putObject", s3Params);
+  //   const videoUrl = `${process.env.CLOUDFRONT_DOMAIN}/videos/${uniqueId}/${fileName}`;
+  //   res.json({
+  //     message: "Upload URL generated successfully",
+  //     data: { uploadUrl, videoUrl },
+  //   });
+  // } catch (error) {
+  //   res.status(500).json({ message: "Error generating upload URL", error });
+  // }
 };

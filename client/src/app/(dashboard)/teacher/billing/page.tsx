@@ -53,10 +53,10 @@ const TeacherBillingPage = () => {
               <SelectItem className="billing__select-item" value="all">
                 All Types
               </SelectItem>
-              <SelectItem className="billing__select-item" value="stripe">
+              <SelectItem className="billing__select-item" value="STRIPE">
                 Stripe
               </SelectItem>
-              <SelectItem className="billing__select-item" value="paypal">
+              <SelectItem className="billing__select-item" value="PAYPAL">
                 Paypal
               </SelectItem>
             </SelectContent>
@@ -85,7 +85,7 @@ const TeacherBillingPage = () => {
                       key={transaction.transactionId}
                     >
                       <TableCell className="billing__table-cell">
-                        {new Date(transaction.dateTime).toLocaleDateString()}
+                        {new Date(transaction.updatedAt).toLocaleDateString()}
                       </TableCell>
                       <TableCell className="billing__table-cell billing__amount">
                         {formatPrice(transaction.amount)}

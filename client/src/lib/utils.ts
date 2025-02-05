@@ -296,12 +296,13 @@ export const createCourseFormData = (
   data: CourseFormData,
   sections: Section[]
 ): FormData => {
+  console.log("sections ", sections);
   const formData = new FormData();
   formData.append("title", data.courseTitle);
   formData.append("description", data.courseDescription);
   formData.append("category", data.courseCategory);
   formData.append("price", data.coursePrice.toString());
-  formData.append("status", data.courseStatus ? "Published" : "Draft");
+  formData.append("status", data.courseStatus ? "PUBLISHED" : "DRAFT");
 
   const sectionsWithVideos = sections.map((section) => ({
     ...section,
@@ -336,13 +337,13 @@ export const uploadAllVideos = async (
           const updatedChapter = await uploadVideo(
             chapter,
             courseId,
-            updatedSections[i].sectionId,
+            updatedSections[i].id,
             getUploadVideoUrl
           );
           updatedSections[i].chapters[j] = updatedChapter;
         } catch (error) {
           console.error(
-            `Failed to upload video for chapter ${chapter.chapterId}:`,
+            `Failed to upload video for chapter ${chapter.id}:`,
             error
           );
         }
@@ -365,7 +366,7 @@ async function uploadVideo(
     const { uploadUrl, videoUrl } = await getUploadVideoUrl({
       courseId,
       sectionId,
-      chapterId: chapter.chapterId,
+      chapterId: chapter.id,
       fileName: file.name,
       fileType: file.type,
     }).unwrap();
@@ -377,16 +378,11 @@ async function uploadVideo(
       },
       body: file,
     });
-    toast.success(
-      `Video uploaded successfully for chapter ${chapter.chapterId}`
-    );
+    toast.success(`Video uploaded successfully for chapter ${chapter.id}`);
 
     return { ...chapter, video: videoUrl };
   } catch (error) {
-    console.error(
-      `Failed to upload video for chapter ${chapter.chapterId}:`,
-      error
-    );
+    console.error(`Failed to upload video for chapter ${chapter.id}:`, error);
     throw error;
   }
 }

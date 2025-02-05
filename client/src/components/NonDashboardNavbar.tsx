@@ -35,6 +35,18 @@ const NonDashboardNavbar = () => {
           </div>
         </div>
         <div className="nondashboard-navbar__actions">
+          {user && (
+            <div>
+              <Link
+                href={
+                  userRole === "teacher" ? "/teacher/courses" : "/user/courses"
+                }
+              >
+                Dashboard
+              </Link>
+            </div>
+          )}
+
           <button className="nondashboard-navbar__notification-button">
             <span className="nondashboard-navbar__notification-indicator"></span>
             <Bell className="nondashboard-navbar__notification-icon" />

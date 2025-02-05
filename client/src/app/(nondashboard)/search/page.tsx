@@ -18,7 +18,7 @@ const Search = () => {
   useEffect(() => {
     if (courses) {
       if (id) {
-        const course = courses.find((c) => c.courseId === id);
+        const course = courses.find((c) => c.id === id);
         setSelectedCourse(course || courses[0]);
       } else {
         setSelectedCourse(courses[0]);
@@ -31,7 +31,7 @@ const Search = () => {
 
   const handleCourseSelect = (course: Course) => {
     setSelectedCourse(course);
-    router.push(`/search?id=${course.courseId}`, { scroll: false });
+    router.push(`/search?id=${course.id}`, { scroll: false });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -57,9 +57,9 @@ const Search = () => {
         >
           {courses.map((course) => (
             <CourseCardSearch
-              key={course.courseId}
+              key={course.id}
               course={course}
-              isSelected={selectedCourse?.courseId === course.courseId}
+              isSelected={selectedCourse?.id === course.id}
               onClick={() => handleCourseSelect(course)}
             />
           ))}

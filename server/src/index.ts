@@ -21,9 +21,9 @@ import userCourseProgressRoutes from "./routes/userCourseProgressRoutes";
 // CONFIGURATIONS
 dotenv.config();
 const isProduction = process.env.NODE_ENV === "production";
-if (!isProduction) {
-  dynamoose.aws.ddb.local();
-}
+// if (!isProduction) {
+//   dynamoose.aws.ddb.local();
+// }
 
 export const clerkClient = createClerkClient({
   secretKey: process.env.CLERK_SECRET_KEY,

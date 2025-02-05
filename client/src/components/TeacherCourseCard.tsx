@@ -10,6 +10,7 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { Pencil, Trash2 } from "lucide-react";
+import { Status } from "@/types/enum";
 
 const TeacherCourseCard = ({
   course,
@@ -45,7 +46,7 @@ const TeacherCourseCard = ({
             <span
               className={cn(
                 "font-semibold px-2 py-1 rounded",
-                course.status === "Published"
+                course.status === Status.PUBLISHED
                   ? "bg-green-500/20 text-green-400"
                   : "bg-red-500/20 text-red-400"
               )}

@@ -21,7 +21,7 @@ const CoursesPage = () => {
     data: courses,
     isLoading,
     isError,
-  } = useGetCoursesQuery({ category: "all" });
+  } = useGetCoursesQuery({ category: "all", user: user?.id });
 
   const [createCourse] = useCreateCourseMutation();
   const [deleteCourse] = useDeleteCourseMutation();
@@ -43,14 +43,14 @@ const CoursesPage = () => {
   }, [courses, searchTerm, selectedCategory]);
 
   const handleEdit = (course: Course) => {
-    router.push(`/teacher/courses/${course.courseId}`, {
+    router.push(`/teacher/courses/${course.id}`, {
       scroll: false,
     });
   };
 
   const handleDelete = async (course: Course) => {
     if (window.confirm("Are you sure you want to delete this course?")) {
-      await deleteCourse(course.courseId).unwrap();
+      await deleteCourse(course.id).unwrap();
     }
   };
 
@@ -61,7 +61,7 @@ const CoursesPage = () => {
       teacherId: user.id,
       teacherName: user.fullName || "Unknown Teacher",
     }).unwrap();
-    router.push(`/teacher/courses/${result.courseId}`, {
+    router.push(`/teacher/courses/${result.id}`, {
       scroll: false,
     });
   };
@@ -72,7 +72,7 @@ const CoursesPage = () => {
   return (
     <div className="teacher-courses">
       <Header
-        title="Courses"
+        title="My Courses"
         subtitle="Browse your courses"
         rightElement={
           <Button
@@ -90,7 +90,7 @@ const CoursesPage = () => {
       <div className="teacher-courses__grid">
         {filteredCourses.map((course) => (
           <TeacherCourseCard
-            key={course.courseId}
+            key={course.id}
             course={course}
             onEdit={handleEdit}
             onDelete={handleDelete}

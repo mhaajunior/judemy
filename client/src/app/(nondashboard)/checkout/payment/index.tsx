@@ -13,11 +13,12 @@ import CoursePreview from "@/components/CoursePreview";
 import { CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { Provider } from "@/types/enum";
 
 const PaymentPageContent = () => {
   const stripe = useStripe();
   const elements = useElements();
-  const [createTransaction] = useCreateTransactionMutation();
+  const [createTransaction, { isLoading }] = useCreateTransactionMutation();
   const { navigateToStep } = useCheckoutNavigation();
   const { course, courseId } = useCurrentCourse();
   const { user } = useUser();
@@ -50,7 +51,7 @@ const PaymentPageContent = () => {
         transactionId: result.paymentIntent.id,
         userId: user?.id,
         courseId,
-        paymentProvider: "stripe",
+        paymentProvider: Provider.STRIPE,
         amount: course?.price || 0,
       };
 
@@ -122,7 +123,7 @@ const PaymentPageContent = () => {
           form="payment-form"
           type="submit"
           className="payment__submit"
-          disabled={!stripe || !elements}
+          disabled={!stripe || !elements || isLoading}
         >
           Pay with Credit Card
         </Button>

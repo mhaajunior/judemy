@@ -51,8 +51,8 @@ export default function DroppableComponent() {
           <div ref={provided.innerRef} {...provided.droppableProps}>
             {sections.map((section: Section, sectionIndex: number) => (
               <Draggable
-                key={section.sectionId}
-                draggableId={section.sectionId}
+                key={section.id}
+                draggableId={section.id}
                 index={sectionIndex}
               >
                 {(draggableProvider) => (
@@ -76,7 +76,7 @@ export default function DroppableComponent() {
                         handleChapterDragEnd(result, sectionIndex)
                       }
                     >
-                      <Droppable droppableId={`chapters-${section.sectionId}`}>
+                      <Droppable droppableId={`chapters-${section.id}`}>
                         {(droppableProvider) => (
                           <div
                             ref={droppableProvider.innerRef}
@@ -85,8 +85,8 @@ export default function DroppableComponent() {
                             {section.chapters.map(
                               (chapter: Chapter, chapterIndex: number) => (
                                 <Draggable
-                                  key={chapter.chapterId}
-                                  draggableId={chapter.chapterId}
+                                  key={chapter.id}
+                                  draggableId={chapter.id}
                                   index={chapterIndex}
                                 >
                                   {(draggableProvider) => (
@@ -154,7 +154,7 @@ const SectionHeader = ({
         <div className="droppable-section__title-container">
           <div className="droppable-section__title">
             <GripVertical className="h-6 w-6 mb-1" />
-            <h3 className="text-lg font-medium">{section.sectionTitle}</h3>
+            <h3 className="text-lg font-medium">{section.title}</h3>
           </div>
           <div className="droppable-chapter__actions">
             <Button
@@ -177,9 +177,9 @@ const SectionHeader = ({
             </Button>
           </div>
         </div>
-        {section.sectionDescription && (
+        {section.description && (
           <p className="droppable-section__description">
-            {section.sectionDescription}
+            {section.description}
           </p>
         )}
       </div>

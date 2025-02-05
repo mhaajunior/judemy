@@ -1,0 +1,127 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Chapter {
+  id        String   @id @default(uuid())
+  type      Type
+  title     String
+  content   String
+  video     String?
+  sectionId String
+  section   Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  order     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Section {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  chapters    Chapter[]
+  courseId    String
+  course      Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Enrollment {
+  id        String   @id @default(uuid())
+  userId    String
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique(fields: [userId, courseId], name: "uniqueEnrollment")
+}
+
+model Course {
+  id                 String               @id @default(uuid())
+  teacherId          String
+  teacherName        String
+  title              String
+  description        String?
+  category           String
+  image              String?
+  price              Int?
+  level              Level
+  status             Status
+  sections           Section[]
+  enrollments        Enrollment[]
+  transactions       Transaction[]
+  userCourseProgress UserCourseProgress[]
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+}
+
+model Transaction {
+  id              String   @id @default(uuid())
+  userId          String
+  transactionId   String   @unique
+  courseId        String
+  course          Course   @relation(fields: [courseId], references: [id])
+  paymentProvider Provider
+  amount          Int?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique(fields: [userId, courseId], name: "uniqueTransaction")
+}
+
+model ChapterProgress {
+  id                String          @id @default(uuid())
+  sectionProgressId String
+  sectionProgress   SectionProgress @relation(fields: [sectionProgressId], references: [id], onDelete: Cascade)
+  completed         Boolean
+}
+
+model SectionProgress {
+  id                   String             @id @default(uuid())
+  userCourseProgressId String
+  userCourseProgress   UserCourseProgress @relation(fields: [userCourseProgressId], references: [id], onDelete: Cascade)
+  chapterProgress      ChapterProgress[]
+}
+
+model UserCourseProgress {
+  id              String            @id @default(uuid())
+  userId          String
+  courseId        String
+  course          Course            @relation(fields: [courseId], references: [id])
+  overallProgress Float
+  sectionProgress SectionProgress[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}
+
+enum Type {
+  TEXT
+  QUIZ
+  VIDEO
+}
+
+enum Level {
+  BEGINNER
+  INTERMIDIATE
+  ADVANCED
+}
+
+enum Status {
+  DRAFT
+  PUBLISHED
+}
+
+enum Provider {
+  STRIPE
+}

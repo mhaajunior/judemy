@@ -1,3 +1,5 @@
+import { Level, Provider, Status, Type } from "./enum";
+
 declare global {
   interface PaymentMethod {
     methodId: string;
@@ -36,7 +38,7 @@ declare global {
   }
 
   interface Course {
-    courseId: string;
+    id: string;
     teacherId: string;
     teacherName: string;
     title: string;
@@ -44,23 +46,25 @@ declare global {
     category: string;
     image?: string;
     price?: number; // Stored in cents (e.g., 4999 for $49.99)
-    level: "Beginner" | "Intermediate" | "Advanced";
-    status: "Draft" | "Published";
+    level: Level;
+    status: Status;
     sections: Section[];
     enrollments?: Array<{
       userId: string;
     }>;
+    transactions: Transaction[];
   }
 
   interface Transaction {
+    id: string;
     userId: string;
     transactionId: string;
-    dateTime: string;
     courseId: string;
-    paymentProvider: "stripe";
-    paymentMethodId?: string;
-    amount: number; // Stored in cents
-    savePaymentMethod?: boolean;
+    course: Course;
+    paymentProvider: Provider;
+    amount?: number; // Stored in cents
+    createdAt: Date;
+    updatedAt: Date;
   }
 
   interface DateRange {
@@ -69,12 +73,11 @@ declare global {
   }
 
   interface UserCourseProgress {
+    id: string;
     userId: string;
     courseId: string;
-    enrollmentDate: string;
     overallProgress: number;
-    sections: SectionProgress[];
-    lastAccessedTimestamp: string;
+    sectionProgress: SectionProgress[];
   }
 
   type CreateUserArgs = Omit<User, "userId">;
@@ -101,29 +104,35 @@ declare global {
   }
 
   interface Chapter {
-    chapterId: string;
+    id: string;
     title: string;
     content: string;
     video?: string | File;
-    freePreview?: boolean;
-    type: "Text" | "Quiz" | "Video";
+    sectionId?: string;
+    section?: Section;
+    type: Type;
   }
 
   interface ChapterProgress {
-    chapterId: string;
+    id: string;
+    sectionProgressId: string;
+    sectionProgress: SectionProgress;
     completed: boolean;
   }
 
   interface SectionProgress {
-    sectionId: string;
-    chapters: ChapterProgress[];
+    id: string;
+    userCourseProgressId: string;
+    userCourseProgress: UserCourseProgress;
+    chapterProgress: ChapterProgress[];
   }
 
   interface Section {
-    sectionId: string;
-    sectionTitle: string;
-    sectionDescription?: string;
+    id: string;
+    title: string;
+    description?: string;
     chapters: Chapter[];
+    courseId?: string;
   }
 
   interface WizardStepperProps {

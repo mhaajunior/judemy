@@ -54,6 +54,7 @@ const Navbar = ({ isCoursePage }: { isCoursePage: boolean }) => {
             userProfileUrl={
               userRole === "teacher" ? "/teacher/profile" : "/user/profile"
             }
+            signInUrl="/"
           />
         </div>
       </div>

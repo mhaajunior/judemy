@@ -33,8 +33,8 @@ const SectionModal = () => {
     if (isSectionModalOpen) {
       if (section) {
         form.reset({
-          title: section.sectionTitle,
-          description: section.sectionDescription,
+          title: section.title,
+          description: section.description,
         });
       } else {
         form.reset({
@@ -51,9 +51,9 @@ const SectionModal = () => {
 
   const onSubmit = (data: SectionFormData) => {
     const newSection: Section = {
-      sectionId: section?.sectionId || uuidv4(),
-      sectionTitle: data.title,
-      sectionDescription: data.description,
+      id: section?.id || uuidv4(),
+      title: data.title,
+      description: data.description,
       chapters: section?.chapters || [],
     };
 

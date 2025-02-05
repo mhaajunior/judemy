@@ -26,6 +26,7 @@ import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import ChapterModal from "./ChapterModal";
 import SectionModal from "./SectionModal";
+import { Status } from "@/types/enum";
 
 const CourseEditor = () => {
   const router = useRouter();
@@ -51,13 +52,12 @@ const CourseEditor = () => {
 
   useEffect(() => {
     if (course) {
-      console.log(course);
       form.reset({
         courseTitle: course.title,
         courseDescription: course.description,
         courseCategory: course.category,
         coursePrice: centsToDollars(course.price),
-        courseStatus: course.status === "Published",
+        courseStatus: course.status === Status.PUBLISHED,
       });
       dispatch(setSections(course.sections || []));
     }

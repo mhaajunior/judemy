@@ -1,0 +1,62 @@
+[
+  {
+    "id": "2f9d1e8b-5a3c-4b7f-9e6d-8c2a1f0b3d5e",
+    "courseId": "3a9f3d6c-c391-4b1c-9c3d-6c3f3d6c3f3d",
+    "title": "Getting Started",
+    "description": "Learn the basics of programming and set up your development environment."
+  },
+  {
+    "id": "3g0e2f9c-6d4e-5a7f-8b9g-1h2i3j4k5l6m",
+    "courseId": "3a9f3d6c-c391-4b1c-9c3d-6c3f3d6c3f3d",
+    "title": "Basic Programming Concepts",
+    "description": "Explore fundamental programming concepts and data types."
+  },
+  {
+    "id": "4h1f3g0d-7e5f-6b8g-9c0h-2i3j4k5l6m7n",
+    "courseId": "3a9f3d6c-c391-4b1c-9c3d-6c3f3d6c3f3d",
+    "title": "Functions and Modules",
+    "description": "Learn how to organize your code using functions and modules."
+  },
+  {
+    "id": "1a7b3c5d-9e2f-4g6h-8i0j-2k4l6m8n0p1q",
+    "courseId": "8b4f7d9c-4b1c-4b1c-8b4f-7d9c8b4f7d9c",
+    "title": "Neural Networks",
+    "description": "Learn about neural networks and their applications."
+  },
+  {
+    "id": "2b8c4d6e-0f3g-5h7i-9j1k-3l5m7n9p1q3r",
+    "courseId": "8b4f7d9c-4b1c-4b1c-8b4f-7d9c8b4f7d9c",
+    "title": "Deep Learning",
+    "description": "Explore advanced deep learning techniques and architectures."
+  },
+  {
+    "id": "3c9d5e7f-1g4h-6i8j-0k2l-4m6n8p0q2r4s",
+    "courseId": "8b4f7d9c-4b1c-4b1c-8b4f-7d9c8b4f7d9c",
+    "title": "Advanced ML Algorithms",
+    "description": "Study cutting-edge machine learning algorithms and their implementations."
+  },
+  {
+    "id": "3e5f7g9h-1i3j-5k7l-9m1n-3o5p7q9r1s3t",
+    "courseId": "c5d6e7f8-g9h0-i1j2-k3l4-m5n6o7p8q9r0",
+    "title": "HTML Basics",
+    "description": "Learn the fundamentals of HTML."
+  },
+  {
+    "id": "4f6g8h0i-2j4k-6l8m-0n2p-4q6r8s0t2u4v",
+    "courseId": "c5d6e7f8-g9h0-i1j2-k3l4-m5n6o7p8q9r0",
+    "title": "CSS Styling",
+    "description": "Learn how to style your HTML with CSS."
+  },
+  {
+    "id": "4u6v8w0x-2y4z-6a8b-0c2d-4e6f8g0h2i4j",
+    "courseId": "d4e5f6g7-h8i9-j0k1-l2m3-n4o5p6q7r8s9",
+    "title": "Introduction to Data Science",
+    "description": "Learn the basics of data science and its applications."
+  },
+  {
+    "id": "5k7l9m1n-3o5p-7q9r-1s3t-5u7v9w1x3y5z",
+    "courseId": "e5f6g7h8-i9j0-k1l2-m3n4-o5p6q7r8s9t0",
+    "title": "Getting Started with React Native",
+    "description": "Learn the basics of React Native development."
+  }
+]

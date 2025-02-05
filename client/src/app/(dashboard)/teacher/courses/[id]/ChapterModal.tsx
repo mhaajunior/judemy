@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { ChapterFormData, chapterSchema } from "@/lib/schemas";
 import { addChapter, closeChapterModal, editChapter } from "@/state";
 import { useAppDispatch, useAppSelector } from "@/state/redux";
+import { Type } from "@/types/enum";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
 import React, { useEffect } from "react";
@@ -69,10 +70,10 @@ const ChapterModal = () => {
     if (selectedSectionIndex === null) return;
 
     const newChapter: Chapter = {
-      chapterId: chapter?.chapterId || uuidv4(),
+      id: chapter?.id || uuidv4(),
       title: data.title,
       content: data.content,
-      type: data.video ? "Video" : "Text",
+      type: data.video ? Type.VIDEO : Type.TEXT,
       video: data.video,
     };
 
